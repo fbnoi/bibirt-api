@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"bibirt-api/api/front/dao"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewTmpUser(t *testing.T) {
-	dao.InitDB()
+	dao.Bootstrap()
 	user := dao.NewTmpUser()
 	t.Error(user.ID)
 }
@@ -15,7 +15,7 @@ func TestNewTmpUser(t *testing.T) {
 var once = sync.Once{}
 
 func DoOnce() {
-	once.Do(dao.InitDB)
+	once.Do(dao.Bootstrap)
 }
 
 func BenchmarkNewTmpUser(b *testing.B) {

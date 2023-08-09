@@ -3,6 +3,7 @@ package dao
 import (
 	"bibirt-api/api/front/model"
 	"bibirt-api/api/front/model/trait"
+	"bibirt-api/api/util"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -24,7 +25,7 @@ func NewTmpUser() *model.User {
 	user := &model.User{
 		Uuid:   uuid4.String(),
 		Type:   model.USER_TYPE_TEMP,
-		Name:   "",
+		Name:   util.GenRandomStr(6),
 		Status: model.USER_STATUS_PENDING_TMP,
 		TimeTrait: &trait.TimeTrait{
 			CreatedAt: time.Now().Unix(),

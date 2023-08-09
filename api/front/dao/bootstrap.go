@@ -13,8 +13,12 @@ var (
 	db     *sqlx.DB
 )
 
-func InitDB() {
+func Bootstrap() {
+	addFlag()
+	db = sqlx.MustOpen(dirver, dns)
+}
+
+func addFlag() {
 	flag.StringVar(&dns, "db_dns", "liulang:root@tcp(127.0.0.1:3306)/bibirt", "database url")
 	flag.StringVar(&dirver, "db_driver", "mysql", "database driver")
-	db = sqlx.MustOpen(dirver, dns)
 }
