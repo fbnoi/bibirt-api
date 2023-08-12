@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "bibirt-api/api/user/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.user.v1";
+
+service Auth {
+	rpc RegisterAsAnonymous (RegisterAsAnonymousRequest) returns (RegisterAsAnonymousReply) {
+		option (google.api.http) = {
+			post: "/register_anonymous"
+			body: "*"
+		};
+	};
+	rpc LoginFromToken (LoginFromTokenRequest) returns (LoginFromTokenReply) {
+		option (google.api.http) = {
+			post: "/login_from_token"
+			body: "*"
+		};
+	};
+	rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenReply) {
+		option (google.api.http) = {
+			post: "/refresh"
+			body: "*"
+		};
+	};
+}
+
+message RegisterAsAnonymousRequest {}
+message RegisterAsAnonymousReply {
+	string token = 1;
+	string refresh_token = 2;
+}
+
+message LoginFromTokenRequest {
+	string token = 1; 
+}
+message LoginFromTokenReply {
+	string token = 1;
+	string refresh_token = 2;
+}
+
+message RefreshTokenRequest {
+	string refresh_token = 1;
+	string token = 2;
+}
+message RefreshTokenReply {
+	string token = 1;
+	string refresh_token = 2;
+}
