@@ -24,6 +24,7 @@ init:
 	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
 	go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
 	go install github.com/google/wire/cmd/wire@latest
+	go install entgo.io/ent/cmd/ent@latest
 
 .PHONY: config
 # generate internal proto
@@ -32,6 +33,12 @@ config:
 	       --proto_path=./third_party \
  	       --go_out=paths=source_relative:./internal \
 	       $(INTERNAL_PROTO_FILES)
+
+.PHONY: data
+# generate internal proto
+data:
+	ent generate ./internal/data/ent/schema
+
 
 .PHONY: api
 # generate api proto
@@ -61,6 +68,7 @@ generate:
 all:
 	make api;
 	make config;
+	make data;
 	make generate;
 
 # show help

@@ -2,6 +2,7 @@ package data
 
 import (
 	"bibirt-api/internal/conf"
+	"bibirt-api/internal/data/ent"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
@@ -12,7 +13,7 @@ var ProviderSet = wire.NewSet(NewData, NewGreeterRepo)
 
 // Data .
 type Data struct {
-	// TODO wrapped database client
+	db *ent.Client
 }
 
 // NewData .

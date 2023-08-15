@@ -39,4 +39,3 @@ bin/
 
 # Generate files
 **.pb.go
-cmd

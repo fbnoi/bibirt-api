@@ -51,6 +51,11 @@ type UserUseCase struct {
 	log  *log.Helper
 }
 
+// NewUserUseCase new a Greeter usecase.
+func NewUserUseCase(repo UserRepo, logger log.Logger) *UserUseCase {
+	return &UserUseCase{repo: repo, log: log.NewHelper(logger)}
+}
+
 // CreateGreeter creates a Greeter, and returns the new Greeter.
 func (uc *UserUseCase) CreateUser(ctx context.Context, u *User) (*User, error) {
 	user, err := uc.repo.Save(ctx, u)

@@ -5,6 +5,125 @@ openapi: 3.0.3
 info:
     title: ""
     version: 0.0.1
-paths: {}
+paths:
+    /helloworld/{name}:
+        get:
+            tags:
+                - Greeter
+            description: Sends a greeting
+            operationId: Greeter_SayHello
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /login_from_token:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_LoginFromToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.LoginFromTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.LoginFromTokenReply'
+    /refresh:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.RefreshTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.RefreshTokenReply'
+    /register_anonymous:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_RegisterAsAnonymous
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.RegisterAsAnonymousRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.RegisterAsAnonymousReply'
 components:
-    schemas: {}
+    schemas:
+        api.user.v1.LoginFromTokenReply:
+            type: object
+            properties:
+                token:
+                    type: string
+                refreshToken:
+                    type: string
+        api.user.v1.LoginFromTokenRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+        api.user.v1.RefreshTokenReply:
+            type: object
+            properties:
+                token:
+                    type: string
+                refreshToken:
+                    type: string
+        api.user.v1.RefreshTokenRequest:
+            type: object
+            properties:
+                refreshToken:
+                    type: string
+                token:
+                    type: string
+        api.user.v1.RegisterAsAnonymousReply:
+            type: object
+            properties:
+                token:
+                    type: string
+                refreshToken:
+                    type: string
+        api.user.v1.RegisterAsAnonymousRequest:
+            type: object
+            properties: {}
+        helloworld.v1.HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+            description: The response message containing the greetings
+tags:
+    - name: Auth
+    - name: Greeter
+      description: The greeting service definition.
