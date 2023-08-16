@@ -43,7 +43,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.user.v1.LoginFromTokenReply'
-    /refresh:
+    /parse_token:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_ParseToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.ParseTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.ParseTokenReply'
+    /refresh_token:
         post:
             tags:
                 - Auth
@@ -89,6 +107,16 @@ components:
                 refreshToken:
                     type: string
         api.user.v1.LoginFromTokenRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+        api.user.v1.ParseTokenReply:
+            type: object
+            properties:
+                uuid:
+                    type: string
+        api.user.v1.ParseTokenRequest:
             type: object
             properties:
                 token:

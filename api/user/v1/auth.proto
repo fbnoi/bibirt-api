@@ -23,7 +23,13 @@ service Auth {
 	};
 	rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenReply) {
 		option (google.api.http) = {
-			post: "/refresh"
+			post: "/refresh_token"
+			body: "*"
+		};
+	};
+	rpc ParseToken (ParseTokenRequest) returns (ParseTokenReply) {
+		option (google.api.http) = {
+			post: "/parse_token"
 			body: "*"
 		};
 	};
@@ -50,4 +56,11 @@ message RefreshTokenRequest {
 message RefreshTokenReply {
 	string token = 1;
 	string refresh_token = 2;
+}
+
+message ParseTokenRequest {
+	string token = 1;
+}
+message ParseTokenReply {
+	string uuid = 1;
 }
