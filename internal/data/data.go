@@ -16,6 +16,7 @@ var ProviderSet = wire.NewSet(NewData)
 // Data .
 type Data struct {
 	db *ent.Client
+	// redis
 }
 
 // NewData .

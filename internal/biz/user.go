@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -31,19 +32,19 @@ const (
 type User struct {
 	Id        int64  `json:"id"`
 	Uuid      string `json:"uuid"`
-	Type      int    `json:"type"`
+	Type      uint8  `json:"type"`
 	Name      string `json:"name"`
 	Pwd       sql.NullString
 	Salt      sql.NullString
 	Email     sql.NullString `json:"email,omitempty"`
 	Phone     sql.NullString `json:"phone,omitempty"`
-	Status    int            `json:"status,omitempty"`
-	CreatedAt int64          `json:"created_at,omitempty"`
+	Status    uint8          `json:"status,omitempty"`
+	CreatedAt time.Time      `json:"created_at,omitempty"`
 }
 
 type UserRepo interface {
-	Save(context.Context, *User) (*User, error)
-	FindByUuid(context.Context, string) (*User, error)
+	Save(context.Context, *User) error
+	FindByUUID(context.Context, string, *User) error
 }
 
 type UserUseCase struct {
@@ -57,20 +58,20 @@ func NewUserUseCase(repo UserRepo, logger log.Logger) *UserUseCase {
 }
 
 // CreateGreeter creates a Greeter, and returns the new Greeter.
-func (uc *UserUseCase) CreateUser(ctx context.Context, u *User) (*User, error) {
-	user, err := uc.repo.Save(ctx, u)
+func (uc *UserUseCase) CreateUser(ctx context.Context, u *User) error {
+	err := uc.repo.Save(ctx, u)
 	if err != nil {
 		uJson, _ := json.Marshal(u)
 		uc.log.WithContext(ctx).Errorf("CreateUser: %v error: \n%v", string(uJson), err)
 	}
-	return user, nil
+	return nil
 }
 
-func (uc *UserUseCase) FindUserByUuid(ctx context.Context, uuid string) (*User, bool) {
-	user, err := uc.repo.FindByUuid(ctx, uuid)
+func (uc *UserUseCase) FindUserByUuid(ctx context.Context, uuid string, dist *User) bool {
+	err := uc.repo.FindByUUID(ctx, uuid, dist)
 	if err != nil {
 		uc.log.WithContext(ctx).Errorf("FindUserByUuid: %v error: \n%v", uuid, err)
-		return nil, false
+		return false
 	}
-	return user, true
+	return true
 }
