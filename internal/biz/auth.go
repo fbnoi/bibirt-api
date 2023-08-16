@@ -20,5 +20,6 @@ func NewTokenUseCase(repo *TokenRepo) *TokenUseCase {
 	return &TokenUseCase{repo}
 }
 
-func (tr *TokenUseCase) NewToken(u *User) (*jwt.Token, error)
+func (tr *TokenUseCase) NewToken(u *User, refreshToken *jwt.Token) (*jwt.Token, error)
 func (tr *TokenUseCase) NewRefreshToken(u *User) (*jwt.Token, error)
+func (tr *TokenUseCase) ExpireToken(*jwt.Token)
