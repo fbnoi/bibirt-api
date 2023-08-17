@@ -8,6 +8,12 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Data data = 2;
+  Endpoint endpoint = 3;
+  Auth auth = 4;
+}
+
+message Endpoint {
+  string id = 1;
 }
 
 message Server {
@@ -38,4 +44,33 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message Auth {
+  message Jwt {
+    enum EncryptMethods {
+      ES256 = 0;
+      ES384 = 1;
+      ES512 = 2;
+      
+      RS256 = 3;
+      RS384 = 4;
+      RS512 = 5;
+
+      HS256 = 6;
+      HS384 = 7;
+      HS512 = 8;
+
+      PS256 = 9;
+      PS384 = 10;
+      PS512 = 11;
+
+      EdDSA = 12;
+    }
+    EncryptMethods encrypt_method = 1;
+    string secret = 2;
+    google.protobuf.Duration period = 3;
+    google.protobuf.Duration refresh_period = 4;
+  }
+  Jwt jwt = 1;
 }

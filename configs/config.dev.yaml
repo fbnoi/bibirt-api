@@ -1,3 +1,5 @@
+endpoint:
+  id: bibirt-test.local
 server:
   http:
     addr: 0.0.0.0:8000
@@ -13,3 +15,9 @@ data:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+auth:
+  jwt_token: 
+    encrypt_method: ES256
+    secret: ""
+    period: 1d
+    refresh_period: 7d
