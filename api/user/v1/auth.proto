@@ -15,9 +15,9 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc LoginFromToken (LoginFromTokenRequest) returns (LoginFromTokenReply) {
+	rpc WSToken (WSTokenRequest) returns (WSTokenReply) {
 		option (google.api.http) = {
-			post: "/login_from_token"
+			post: "/ws_token"
 			body: "*"
 		};
 	};
@@ -27,12 +27,7 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc ParseToken (ParseTokenRequest) returns (ParseTokenReply) {
-		option (google.api.http) = {
-			post: "/parse_token"
-			body: "*"
-		};
-	};
+	rpc ParseToken (ParseTokenRequest) returns (ParseTokenReply) {};
 }
 
 message RegisterAsAnonymousRequest {}
@@ -41,10 +36,10 @@ message RegisterAsAnonymousReply {
 	string refresh_token = 2;
 }
 
-message LoginFromTokenRequest {
+message WSTokenRequest {
 	string token = 1; 
 }
-message LoginFromTokenReply {
+message WSTokenReply {
 	string token = 1;
 	string refresh_token = 2;
 }

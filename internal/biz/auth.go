@@ -63,6 +63,7 @@ func (tr *TokenUseCase) NewToken(refreshToken *jwt.Token) *jwt.Token {
 		},
 	})
 }
+
 func (tr *TokenUseCase) NewRefreshToken(u *User) *jwt.Token {
 	now := time.Now()
 	expiresAt := now.Add(tr.cj.RefreshPeriod.AsDuration())
@@ -77,11 +78,21 @@ func (tr *TokenUseCase) NewRefreshToken(u *User) *jwt.Token {
 		},
 	})
 }
+
 func (tr *TokenUseCase) BlockToken(tok *jwt.Token) {
-	t, _ := tok.Claims.GetExpirationTime()
-	if t.After(time.Now()) && !tr.repo.IsTokenBlocked(tok) {
+	if !tr.repo.IsTokenBlocked(tok) {
 		tr.repo.BlockToken(tok)
 	}
 }
 
-func (tr *TokenUseCase) ParseToken(tokenStr string) (*jwt.Token, error)
+func (tr *TokenUseCase) IsTokenValid(tok *jwt.Token) bool {
+	return tok.Valid && !tr.repo.IsTokenBlocked(tok)
+}
+
+func (tr *TokenUseCase) ParseToken(tokenStr string) (*jwt.Token, error) {
+	return jwt.Parse(tokenStr, tr.KeyFunc)
+}
+
+func (tr *TokenUseCase) KeyFunc(*jwt.Token) (interface{}, error) {
+	return tr.cj.Secret, nil
+}

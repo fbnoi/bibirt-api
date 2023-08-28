@@ -2,13 +2,12 @@ package service
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
 	"time"
 
 	pb "bibirt-api/api/user/v1"
 	"bibirt-api/internal/biz"
 	"bibirt-api/internal/conf"
+	"bibirt-api/pkg/util"
 
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt/v5"
@@ -22,29 +21,55 @@ type Claims struct {
 type AuthService struct {
 	pb.UnimplementedAuthServer
 
-	uc   *biz.UserUseCase
-	conf *conf.Server
+	uc *biz.UserUseCase
+	tc *biz.TokenUseCase
+	c  *conf.Server
 }
 
 func NewAuthService(uc *biz.UserUseCase, conf *conf.Server) *AuthService {
-	return &AuthService{uc: uc, conf: conf}
+	return &AuthService{uc: uc, c: conf}
 }
 
 func (s *AuthService) RegisterAsAnonymous(ctx context.Context, req *pb.RegisterAsAnonymousRequest) (*pb.RegisterAsAnonymousReply, error) {
+
 	user := newAnonymousUser()
 	err := s.uc.CreateUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.RegisterAsAnonymousReply{}, nil
+	refreshToken := s.tc.NewRefreshToken(user)
+	token := s.tc.NewToken(refreshToken)
+	tokenStr, _ := token.SignedString(s.c.)
+
+	return &pb.RegisterAsAnonymousReply{
+		Token:        token.SignedString(conf.Auth.Jwt.Secret),
+		RefreshToken: refreshToken.SignedString(conf.Auth.Jwt.Secret),
+	}, nil
 }
-func (s *AuthService) LoginFromToken(ctx context.Context, req *pb.LoginFromTokenRequest) (*pb.LoginFromTokenReply, error) {
-	return &pb.LoginFromTokenReply{}, nil
+
+func (s *AuthService) WSToken(ctx context.Context, req *pb.WSTokenRequest) (*pb.WSTokenReply, error) {
+	tokenStr := req.Token
+	token, err := s.tc.ParseToken(tokenStr)
+	if err != nil {
+		return nil, err
+	}
+	claims := token.Claims.(Claims)
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenReply, error) {
 	return &pb.RefreshTokenReply{}, nil
+}
+
+func (s *AuthService) ParseToken(ctx context.Context, req *pb.ParseTokenRequest) (*pb.ParseTokenReply, error) {
+	tokenStr := req.Token
+	token, err := s.tc.ParseToken(tokenStr)
+	if err != nil {
+		return nil, err
+	}
+	claims := token.Claims.(Claims)
+
+	return &pb.ParseTokenReply{Uuid: claims.UUID}, nil
 }
 
 func (s *AuthService) newToken(user *biz.User) *jwt.Token {
@@ -64,17 +89,8 @@ func newAnonymousUser() *biz.User {
 	return &biz.User{
 		Uuid:      uuid4.String(),
 		Type:      biz.USER_TYPE_TEMP,
-		Name:      genRandomStr(6),
+		Name:      util.GetRandomStr(6),
 		Status:    biz.USER_STATUS_PENDING_TMP,
 		CreatedAt: time.Now(),
 	}
-}
-
-func genRandomStr(len int) string {
-	b := make([]byte, len)
-	_, err := rand.Read(b)
-	if err != nil {
-		panic(err)
-	}
-	return base64.StdEncoding.EncodeToString(b)
 }
