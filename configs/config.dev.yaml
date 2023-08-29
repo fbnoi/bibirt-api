@@ -13,12 +13,13 @@ data:
     source: root:root@tcp(127.0.0.1:3306)/bibirt
   redis:
     addr: 127.0.0.1:6379
+    password:
     read_timeout: 0.2s
     write_timeout: 0.2s
 auth:
   jwt_token: 
     encrypt_method: ES256
-    secret: ""
+    secret: "cf1xMluQbjO0iHCTwtDZyLKayfdl4tJ6QXExU1GVGBH4ArQ8sAzljSiBA04yTiaQ"
     period: 1d
     ws_period: 3h
     refresh_period: 7d

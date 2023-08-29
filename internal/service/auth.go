@@ -27,8 +27,8 @@ type AuthService struct {
 	conf *conf.Server
 }
 
-func NewAuthService(uc *biz.UserUseCase, conf *conf.Server) *AuthService {
-	return &AuthService{uc: uc, conf: conf}
+func NewAuthService(uc *biz.UserUseCase, tc *biz.TokenUseCase, conf *conf.Server) *AuthService {
+	return &AuthService{uc: uc, tc: tc, conf: conf}
 }
 
 func (s *AuthService) RegisterAsAnonymous(ctx context.Context, req *pb.RegisterAsAnonymousRequest) (*pb.RegisterAsAnonymousReply, error) {
