@@ -70,7 +70,8 @@ message Auth {
     EncryptMethods encrypt_method = 1;
     string secret = 2;
     google.protobuf.Duration period = 3;
-    google.protobuf.Duration refresh_period = 4;
+    google.protobuf.Duration ws_period = 4;
+    google.protobuf.Duration refresh_period = 5;
   }
   Jwt jwt = 1;
 }

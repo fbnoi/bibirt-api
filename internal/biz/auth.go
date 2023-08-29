@@ -8,6 +8,7 @@ import (
 )
 
 const TOKEN_SUBJECT = "auth_token"
+const WS_TOKEN_SUBJECT = "auth_token"
 const REFRESH_TOKEN_SUBJECT = "refresh_token"
 
 var (
@@ -51,12 +52,26 @@ func NewTokenUseCase(ce *conf.Endpoint, ca *conf.Auth, repo TokenRepo) *TokenUse
 func (tr *TokenUseCase) NewToken(refreshToken *jwt.Token) *jwt.Token {
 	now := time.Now()
 	expiresAt := now.Add(tr.cj.Period.AsDuration())
-
 	return jwt.NewWithClaims(encrypt_methods[tr.cj.EncryptMethod], Claims{
 		UUID: refreshToken.Claims.(*Claims).UUID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    tr.issuer,
 			Subject:   TOKEN_SUBJECT,
+			IssuedAt:  jwt.NewNumericDate(now),
+			NotBefore: jwt.NewNumericDate(now),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
+		},
+	})
+}
+
+func (tr *TokenUseCase) NewWSToken(token *jwt.Token) *jwt.Token {
+	now := time.Now()
+	expiresAt := now.Add(tr.cj.WsPeriod.AsDuration())
+	return jwt.NewWithClaims(encrypt_methods[tr.cj.EncryptMethod], Claims{
+		UUID: token.Claims.(*Claims).UUID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    tr.issuer,
+			Subject:   WS_TOKEN_SUBJECT,
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
@@ -95,4 +110,12 @@ func (tr *TokenUseCase) ParseToken(tokenStr string) (*jwt.Token, error) {
 
 func (tr *TokenUseCase) KeyFunc(*jwt.Token) (interface{}, error) {
 	return tr.cj.Secret, nil
+}
+
+func (tr *TokenUseCase) SignedString(token *jwt.Token) string {
+	str, err := token.SignedString(tr.cj.Secret)
+	if err != nil {
+		panic(err)
+	}
+	return str
 }

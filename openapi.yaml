@@ -67,8 +67,6 @@ components:
             properties:
                 token:
                     type: string
-                refreshToken:
-                    type: string
         api.user.v1.RefreshTokenRequest:
             type: object
             properties:
@@ -90,8 +88,6 @@ components:
             type: object
             properties:
                 token:
-                    type: string
-                refreshToken:
                     type: string
         api.user.v1.WSTokenRequest:
             type: object

@@ -20,4 +20,5 @@ auth:
     encrypt_method: ES256
     secret: ""
     period: 1d
+    ws_period: 3h
     refresh_period: 7d

@@ -27,7 +27,7 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc ParseToken (ParseTokenRequest) returns (ParseTokenReply) {};
+	rpc ValidateWSToken (ValidateWSTokenRequest) returns (ValidateWSTokenReply) {};
 }
 
 message RegisterAsAnonymousRequest {}
@@ -41,7 +41,6 @@ message WSTokenRequest {
 }
 message WSTokenReply {
 	string token = 1;
-	string refresh_token = 2;
 }
 
 message RefreshTokenRequest {
@@ -50,12 +49,11 @@ message RefreshTokenRequest {
 }
 message RefreshTokenReply {
 	string token = 1;
-	string refresh_token = 2;
 }
 
-message ParseTokenRequest {
+message ValidateWSTokenRequest {
 	string token = 1;
 }
-message ParseTokenReply {
+message ValidateWSTokenReply {
 	string uuid = 1;
 }

@@ -9,6 +9,7 @@ import (
 	"bibirt-api/internal/conf"
 	"bibirt-api/pkg/util"
 
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -21,67 +22,72 @@ type Claims struct {
 type AuthService struct {
 	pb.UnimplementedAuthServer
 
-	uc *biz.UserUseCase
-	tc *biz.TokenUseCase
-	c  *conf.Server
+	uc   *biz.UserUseCase
+	tc   *biz.TokenUseCase
+	conf *conf.Server
 }
 
 func NewAuthService(uc *biz.UserUseCase, conf *conf.Server) *AuthService {
-	return &AuthService{uc: uc, c: conf}
+	return &AuthService{uc: uc, conf: conf}
 }
 
 func (s *AuthService) RegisterAsAnonymous(ctx context.Context, req *pb.RegisterAsAnonymousRequest) (*pb.RegisterAsAnonymousReply, error) {
-
+	var err error
 	user := newAnonymousUser()
-	err := s.uc.CreateUser(ctx, user)
+	err = s.uc.CreateUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
-
 	refreshToken := s.tc.NewRefreshToken(user)
 	token := s.tc.NewToken(refreshToken)
-	tokenStr, _ := token.SignedString(s.c.)
-
 	return &pb.RegisterAsAnonymousReply{
-		Token:        token.SignedString(conf.Auth.Jwt.Secret),
-		RefreshToken: refreshToken.SignedString(conf.Auth.Jwt.Secret),
+		Token:        s.tc.SignedString(token),
+		RefreshToken: s.tc.SignedString(refreshToken),
 	}, nil
 }
 
 func (s *AuthService) WSToken(ctx context.Context, req *pb.WSTokenRequest) (*pb.WSTokenReply, error) {
-	tokenStr := req.Token
-	token, err := s.tc.ParseToken(tokenStr)
+	token, err := s.parseAndValidateToken(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	claims := token.Claims.(Claims)
+	wsToken := s.tc.NewWSToken(token)
+	return &pb.WSTokenReply{
+		Token: s.tc.SignedString(wsToken),
+	}, nil
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenReply, error) {
-	return &pb.RefreshTokenReply{}, nil
+	refreshToken, err := s.parseAndValidateToken(req.Token)
+	if err != nil {
+		return nil, err
+	}
+	token := s.tc.NewToken(refreshToken)
+
+	return &pb.RefreshTokenReply{
+		Token: s.tc.SignedString(token),
+	}, nil
 }
 
-func (s *AuthService) ParseToken(ctx context.Context, req *pb.ParseTokenRequest) (*pb.ParseTokenReply, error) {
-	tokenStr := req.Token
-	token, err := s.tc.ParseToken(tokenStr)
+func (s *AuthService) ValidateWSToken(ctx context.Context, req *pb.ValidateWSTokenRequest) (*pb.ValidateWSTokenReply, error) {
+	token, err := s.parseAndValidateToken(req.Token)
 	if err != nil {
 		return nil, err
 	}
 	claims := token.Claims.(Claims)
 
-	return &pb.ParseTokenReply{Uuid: claims.UUID}, nil
+	return &pb.ValidateWSTokenReply{Uuid: claims.UUID}, nil
 }
 
-func (s *AuthService) newToken(user *biz.User) *jwt.Token {
-	return jwt.NewWithClaims(jwt.SigningMethodES256, Claims{
-		UUID: user.Uuid,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    s.conf.String(),
-			Subject:   "client_auth",
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-		},
-	})
+func (s *AuthService) parseAndValidateToken(tokenStr string) (*jwt.Token, error) {
+	token, err := s.tc.ParseToken(tokenStr)
+	if err != nil {
+		return nil, errors.BadRequest(err.Error(), "token invalid")
+	}
+	if !s.tc.IsTokenValid(token) {
+		return nil, errors.BadRequest("token invalid", "token invalid")
+	}
+	return token, nil
 }
 
 func newAnonymousUser() *biz.User {
