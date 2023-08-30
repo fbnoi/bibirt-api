@@ -66,10 +66,10 @@ generate:
 .PHONY: all
 # generate all
 all:
-	make api;
-	make config;
-	make data;
-	make generate;
+	make api &&\
+	make config &&\
+	make data &&\
+	make generate
 
 # show help
 help:
