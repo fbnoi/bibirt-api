@@ -58,7 +58,7 @@ func (s *AuthService) WSToken(ctx context.Context, req *pb.WSTokenRequest) (*pb.
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenReply, error) {
-	refreshToken, err := s.parseAndValidateToken(req.Token)
+	refreshToken, err := s.parseAndValidateToken(req.RefreshToken)
 	if err != nil {
 		return nil, err
 	}

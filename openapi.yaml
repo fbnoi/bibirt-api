@@ -72,8 +72,6 @@ components:
             properties:
                 refreshToken:
                     type: string
-                token:
-                    type: string
         api.user.v1.RegisterAsAnonymousReply:
             type: object
             properties:
