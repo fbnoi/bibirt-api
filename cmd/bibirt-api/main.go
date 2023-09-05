@@ -20,11 +20,11 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string
+	Name = "bibirt-api"
 	// Version is the version of the compiled software.
-	Version string
+	Version = "0.0.1-alpha"
 	// flagconf is the config flag.
-	flagconf string
+	flagconf = "../../configs"
 
 	id, _ = os.Hostname()
 )
