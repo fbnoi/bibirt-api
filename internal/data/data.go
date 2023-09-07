@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -60,6 +60,8 @@ func newRedisClient(conf *conf.Data) *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:         conf.Redis.Addr,
 		Password:     conf.Redis.Password,
+		DB:           int(conf.Redis.Db),
+		DialTimeout:  conf.Redis.DialTimeout.AsDuration(),
 		WriteTimeout: conf.Redis.WriteTimeout.AsDuration(),
 		ReadTimeout:  conf.Redis.ReadTimeout.AsDuration(),
 	})
