@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.user.v1;
 
 import "google/api/annotations.proto";
+import "validate/validate.proto";
 
 option go_package = "bibirt-api/api/user/v1;v1";
 option java_multiple_files = true;
@@ -37,22 +38,21 @@ message RegisterAsAnonymousReply {
 }
 
 message WSTokenRequest {
-	string token = 1; 
+	string token = 1 [(validate.rules).string.min_len =  1]; 
 }
 message WSTokenReply {
 	string token = 1;
 }
 
 message RefreshTokenRequest {
-	string refresh_token = 1;
-	string token = 2;
+	string refresh_token = 1 [(validate.rules).string.min_len =  1];
 }
 message RefreshTokenReply {
 	string token = 1;
 }
 
 message ValidateWSTokenRequest {
-	string token = 1;
+	string token = 1 [(validate.rules).string.min_len =  1];
 }
 message ValidateWSTokenReply {
 	string uuid = 1;
