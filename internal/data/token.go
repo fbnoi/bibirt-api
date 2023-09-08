@@ -16,6 +16,12 @@ const (
 	TOKEN_USER_NAMESPACE       = "token:user"
 )
 
+type MyClaimInterface interface {
+	jwt.Claims
+	GetID() (string, error)
+	GetUUID() (string, error)
+}
+
 type ErrAble interface {
 	Err() error
 }
@@ -31,23 +37,22 @@ func NewTokenRepo(data *Data, logger log.Logger) biz.TokenRepo {
 }
 
 func (tr *TokenRepo) RegisterToken(tok *jwt.Token) {
-	claims := tok.Claims.(jwt.RegisteredClaims)
-	UUID := claims.Audience[0]
+	claim := tok.Claims.(MyClaimInterface)
 	tr.must(
 		tr.rdb.HSet(
 			context.Background(),
-			fmt.Sprintf("%s:%s", TOKEN_USER_NAMESPACE, UUID),
-			claims.Subject,
-			claims.ID,
+			fmt.Sprintf("%s:%s", TOKEN_USER_NAMESPACE, claimUUID(claim)),
+			claimSubject(claim),
+			claimID(claim),
 		),
 	)
-	key := fmt.Sprintf("token:%s:%s", claims.Subject, claims.ID)
-	tr.must(tr.rdb.Set(context.Background(), key, 0, time.Until(claims.ExpiresAt.Time)))
+	key := fmt.Sprintf("token:%s:%s", claimSubject(claim), claimID(claim))
+	tr.must(tr.rdb.Set(context.Background(), key, 0, time.Until(claimExpireAt(claim))))
 }
 
 func (tr *TokenRepo) BlockToken(tok *jwt.Token) {
-	claims := tok.Claims.(jwt.RegisteredClaims)
-	key := fmt.Sprintf("token:%s:%s", claims.Subject, claims.ID)
+	claim := tok.Claims.(MyClaimInterface)
+	key := fmt.Sprintf("token:%s:%s", claimSubject(claim), claimID(claim))
 	tr.must(tr.rdb.Set(context.Background(), key, 1, 0))
 }
 
@@ -61,7 +66,7 @@ func (tr *TokenRepo) getUserTokenID(UUID, field string) string {
 	key := fmt.Sprintf("%s:%s", TOKEN_USER_NAMESPACE, UUID)
 	id, err := tr.rdb.HGet(context.Background(), key, field).Result()
 	if err != nil && err != redis.Nil {
-		panic(fmt.Sprintf("redis.getUserTokenID:%s", err))
+		panic(err)
 	}
 
 	return id
@@ -88,4 +93,24 @@ func (tr *TokenRepo) must(errAble ErrAble) {
 	if err := errAble.Err(); err != nil && err != redis.Nil {
 		panic(err)
 	}
+}
+
+func claimUUID(claim MyClaimInterface) string {
+	str, _ := claim.GetUUID()
+	return str
+}
+
+func claimID(claim MyClaimInterface) string {
+	str, _ := claim.GetID()
+	return str
+}
+
+func claimSubject(claim MyClaimInterface) string {
+	str, _ := claim.GetSubject()
+	return str
+}
+
+func claimExpireAt(claim MyClaimInterface) time.Time {
+	t, _ := claim.GetExpirationTime()
+	return t.Time
 }

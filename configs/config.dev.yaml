@@ -19,7 +19,7 @@ data:
     write_timeout: 0.6s
 auth:
   jwt: 
-    encrypt_method: ES256
+    encrypt_method: HS256
     secret: "cf1xMluQbjO0iHCTwtDZyLKayfdl4tJ6QXExU1GVGBH4ArQ8sAzljSiBA04yTiaQ"
     period: 3600s
     ws_period: 3600s

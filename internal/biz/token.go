@@ -32,9 +32,17 @@ var (
 	}
 )
 
-type Claims struct {
+type MyClaim struct {
 	jwt.RegisteredClaims
 	UUID string `json:"uid,omitempty"`
+}
+
+func (mc MyClaim) GetID() (string, error) {
+	return mc.ID, nil
+}
+
+func (mc MyClaim) GetUUID() (string, error) {
+	return mc.UUID, nil
 }
 
 type TokenRepo interface {
@@ -56,7 +64,7 @@ func NewTokenUseCase(ce *conf.Endpoint, ca *conf.Auth, repo TokenRepo) *TokenUse
 
 func (tr *TokenUseCase) NewWSToken(token *jwt.Token) *jwt.Token {
 	return tr.newToken(
-		token.Claims.(*Claims).UUID,
+		token.Claims.(MyClaim).UUID,
 		WS_TOKEN_SUBJECT,
 		time.Now().Add(tr.cj.WsPeriod.AsDuration()),
 	)
@@ -64,7 +72,7 @@ func (tr *TokenUseCase) NewWSToken(token *jwt.Token) *jwt.Token {
 
 func (tr *TokenUseCase) NewToken(refreshToken *jwt.Token) *jwt.Token {
 	return tr.newToken(
-		refreshToken.Claims.(*Claims).UUID,
+		refreshToken.Claims.(MyClaim).UUID,
 		TOKEN_SUBJECT,
 		time.Now().Add(tr.cj.WsPeriod.AsDuration()),
 	)
@@ -90,12 +98,12 @@ func (tr *TokenUseCase) IsTokenValid(tok *jwt.Token) bool {
 
 func (tr *TokenUseCase) ParseToken(tokenStr string) (*jwt.Token, error) {
 	return jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-		return tr.cj.Secret, nil
+		return []byte(tr.cj.Secret), nil
 	})
 }
 
 func (tr *TokenUseCase) SignedString(token *jwt.Token) string {
-	str, err := token.SignedString(tr.cj.Secret)
+	str, err := token.SignedString([]byte(tr.cj.Secret))
 	if err != nil {
 		panic(err)
 	}
@@ -105,7 +113,7 @@ func (tr *TokenUseCase) SignedString(token *jwt.Token) string {
 func (tr *TokenUseCase) newToken(UUID, subject string, expiresAt time.Time) *jwt.Token {
 	now := time.Now()
 	uuid4 := uuid.Must(uuid.NewV4())
-	tok := jwt.NewWithClaims(encrypt_methods[tr.cj.EncryptMethod], Claims{
+	tok := jwt.NewWithClaims(encrypt_methods[tr.cj.EncryptMethod], MyClaim{
 		UUID: UUID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    tr.issuer,
