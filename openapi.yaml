@@ -6,6 +6,24 @@ info:
     title: Auth API
     version: 0.0.1
 paths:
+    /conn_uuid:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_ConnUUID
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.ConnUUIDRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.ConnUUIDReply'
     /refresh_token:
         post:
             tags:
@@ -62,6 +80,16 @@ paths:
                                 $ref: '#/components/schemas/api.user.v1.WSTokenReply'
 components:
     schemas:
+        api.user.v1.ConnUUIDReply:
+            type: object
+            properties:
+                uuid:
+                    type: string
+        api.user.v1.ConnUUIDRequest:
+            type: object
+            properties:
+                token:
+                    type: string
         api.user.v1.RefreshTokenReply:
             type: object
             properties:

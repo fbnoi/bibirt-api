@@ -14,11 +14,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type Claims struct {
-	jwt.RegisteredClaims
-	UUID string
-}
-
 type AuthService struct {
 	pb.UnimplementedAuthServer
 
@@ -39,7 +34,7 @@ func (s *AuthService) RegisterAsAnonymous(ctx context.Context, req *pb.RegisterA
 		return nil, err
 	}
 	refreshToken := s.tc.NewRefreshToken(user)
-	token := s.tc.NewToken(refreshToken)
+	token := s.tc.NewAuthToken(refreshToken)
 	return &pb.RegisterAsAnonymousReply{
 		Token:        s.tc.SignedString(token),
 		RefreshToken: s.tc.SignedString(refreshToken),
@@ -51,6 +46,9 @@ func (s *AuthService) WSToken(ctx context.Context, req *pb.WSTokenRequest) (*pb.
 	if err != nil {
 		return nil, err
 	}
+	// if !s.tc.IsAuthToken(token) {
+	// 	return nil, errors.BadRequest()
+	// }
 	wsToken := s.tc.NewWSToken(token)
 	return &pb.WSTokenReply{
 		Token: s.tc.SignedString(wsToken),
@@ -69,14 +67,14 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 	}, nil
 }
 
-func (s *AuthService) ValidateWSToken(ctx context.Context, req *pb.ValidateWSTokenRequest) (*pb.ValidateWSTokenReply, error) {
+func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*pb.ConnUUIDReply, error) {
 	token, err := s.parseAndValidateToken(req.Token)
 	if err != nil {
 		return nil, err
 	}
-	claims := token.Claims.(Claims)
+	claims := s.tc.Claims(token)
 
-	return &pb.ValidateWSTokenReply{Uuid: claims.UUID}, nil
+	return &pb.ConnUUIDReply{Uuid: claims.UUID}, nil
 }
 
 func (s *AuthService) parseAndValidateToken(tokenStr string) (*jwt.Token, error) {

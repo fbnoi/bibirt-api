@@ -28,7 +28,12 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc ValidateWSToken (ValidateWSTokenRequest) returns (ValidateWSTokenReply) {};
+	rpc ConnUUID (ConnUUIDRequest) returns (ConnUUIDReply) {
+		option (google.api.http) = {
+			post: "/conn_uuid"
+			body: "*"
+		};
+	};
 }
 
 message RegisterAsAnonymousRequest {}
@@ -51,9 +56,9 @@ message RefreshTokenReply {
 	string token = 1;
 }
 
-message ValidateWSTokenRequest {
+message ConnUUIDRequest {
 	string token = 1 [(validate.rules).string.min_len =  1];
 }
-message ValidateWSTokenReply {
+message ConnUUIDReply {
 	string uuid = 1;
 }

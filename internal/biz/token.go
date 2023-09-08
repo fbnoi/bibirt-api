@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	TOKEN_SUBJECT         = "auth_token"
+	AUTH_TOKEN_SUBJECT    = "auth_token"
 	WS_TOKEN_SUBJECT      = "ws_token"
 	REFRESH_TOKEN_SUBJECT = "refresh_token"
 )
@@ -32,16 +32,16 @@ var (
 	}
 )
 
-type MyClaim struct {
+type MyClaims struct {
 	jwt.RegisteredClaims
 	UUID string `json:"uid,omitempty"`
 }
 
-func (mc MyClaim) GetID() (string, error) {
+func (mc MyClaims) GetID() (string, error) {
 	return mc.ID, nil
 }
 
-func (mc MyClaim) GetUUID() (string, error) {
+func (mc MyClaims) GetUUID() (string, error) {
 	return mc.UUID, nil
 }
 
@@ -62,18 +62,33 @@ func NewTokenUseCase(ce *conf.Endpoint, ca *conf.Auth, repo TokenRepo) *TokenUse
 	return &TokenUseCase{repo, ce.Id, ca.Jwt}
 }
 
+func (tr *TokenUseCase) IsRefreshToken(token *jwt.Token) bool {
+	sub, _ := token.Claims.GetSubject()
+	return sub == REFRESH_TOKEN_SUBJECT
+}
+
+func (tr *TokenUseCase) IsAuthToken(token *jwt.Token) bool {
+	sub, _ := token.Claims.GetSubject()
+	return sub == REFRESH_TOKEN_SUBJECT
+}
+
+func (tr *TokenUseCase) IsWSToken(token *jwt.Token) bool {
+	sub, _ := token.Claims.GetSubject()
+	return sub == WS_TOKEN_SUBJECT
+}
+
 func (tr *TokenUseCase) NewWSToken(token *jwt.Token) *jwt.Token {
 	return tr.newToken(
-		token.Claims.(MyClaim).UUID,
+		token.Claims.(*MyClaims).UUID,
 		WS_TOKEN_SUBJECT,
 		time.Now().Add(tr.cj.WsPeriod.AsDuration()),
 	)
 }
 
-func (tr *TokenUseCase) NewToken(refreshToken *jwt.Token) *jwt.Token {
+func (tr *TokenUseCase) NewAuthToken(refreshToken *jwt.Token) *jwt.Token {
 	return tr.newToken(
-		refreshToken.Claims.(MyClaim).UUID,
-		TOKEN_SUBJECT,
+		refreshToken.Claims.(*MyClaims).UUID,
+		AUTH_TOKEN_SUBJECT,
 		time.Now().Add(tr.cj.WsPeriod.AsDuration()),
 	)
 }
@@ -96,8 +111,12 @@ func (tr *TokenUseCase) IsTokenValid(tok *jwt.Token) bool {
 	return tok.Valid && !tr.repo.IsTokenBlocked(tok)
 }
 
+func (tr *TokenUseCase) Claims(tok *jwt.Token) *MyClaims {
+	return tok.Claims.(*MyClaims)
+}
+
 func (tr *TokenUseCase) ParseToken(tokenStr string) (*jwt.Token, error) {
-	return jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(tokenStr, &MyClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(tr.cj.Secret), nil
 	})
 }
@@ -113,7 +132,7 @@ func (tr *TokenUseCase) SignedString(token *jwt.Token) string {
 func (tr *TokenUseCase) newToken(UUID, subject string, expiresAt time.Time) *jwt.Token {
 	now := time.Now()
 	uuid4 := uuid.Must(uuid.NewV4())
-	tok := jwt.NewWithClaims(encrypt_methods[tr.cj.EncryptMethod], MyClaim{
+	tok := jwt.NewWithClaims(encrypt_methods[tr.cj.EncryptMethod], &MyClaims{
 		UUID: UUID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    tr.issuer,

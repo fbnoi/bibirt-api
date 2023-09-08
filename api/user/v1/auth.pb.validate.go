@@ -672,22 +672,22 @@ var _ interface {
 	ErrorName() string
 } = RefreshTokenReplyValidationError{}
 
-// Validate checks the field values on ValidateWSTokenRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ValidateWSTokenRequest) Validate() error {
+// Validate checks the field values on ConnUUIDRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ConnUUIDRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ValidateWSTokenRequest with the rules
+// ValidateAll checks the field values on ConnUUIDRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ValidateWSTokenRequestMultiError, or nil if none found.
-func (m *ValidateWSTokenRequest) ValidateAll() error {
+// ConnUUIDRequestMultiError, or nil if none found.
+func (m *ConnUUIDRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ValidateWSTokenRequest) validate(all bool) error {
+func (m *ConnUUIDRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -695,7 +695,7 @@ func (m *ValidateWSTokenRequest) validate(all bool) error {
 	var errors []error
 
 	if utf8.RuneCountInString(m.GetToken()) < 1 {
-		err := ValidateWSTokenRequestValidationError{
+		err := ConnUUIDRequestValidationError{
 			field:  "Token",
 			reason: "value length must be at least 1 runes",
 		}
@@ -706,19 +706,19 @@ func (m *ValidateWSTokenRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ValidateWSTokenRequestMultiError(errors)
+		return ConnUUIDRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ValidateWSTokenRequestMultiError is an error wrapping multiple validation
-// errors returned by ValidateWSTokenRequest.ValidateAll() if the designated
-// constraints aren't met.
-type ValidateWSTokenRequestMultiError []error
+// ConnUUIDRequestMultiError is an error wrapping multiple validation errors
+// returned by ConnUUIDRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ConnUUIDRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ValidateWSTokenRequestMultiError) Error() string {
+func (m ConnUUIDRequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -727,11 +727,11 @@ func (m ValidateWSTokenRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ValidateWSTokenRequestMultiError) AllErrors() []error { return m }
+func (m ConnUUIDRequestMultiError) AllErrors() []error { return m }
 
-// ValidateWSTokenRequestValidationError is the validation error returned by
-// ValidateWSTokenRequest.Validate if the designated constraints aren't met.
-type ValidateWSTokenRequestValidationError struct {
+// ConnUUIDRequestValidationError is the validation error returned by
+// ConnUUIDRequest.Validate if the designated constraints aren't met.
+type ConnUUIDRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -739,24 +739,22 @@ type ValidateWSTokenRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ValidateWSTokenRequestValidationError) Field() string { return e.field }
+func (e ConnUUIDRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ValidateWSTokenRequestValidationError) Reason() string { return e.reason }
+func (e ConnUUIDRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ValidateWSTokenRequestValidationError) Cause() error { return e.cause }
+func (e ConnUUIDRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ValidateWSTokenRequestValidationError) Key() bool { return e.key }
+func (e ConnUUIDRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ValidateWSTokenRequestValidationError) ErrorName() string {
-	return "ValidateWSTokenRequestValidationError"
-}
+func (e ConnUUIDRequestValidationError) ErrorName() string { return "ConnUUIDRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ValidateWSTokenRequestValidationError) Error() string {
+func (e ConnUUIDRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -768,14 +766,14 @@ func (e ValidateWSTokenRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sValidateWSTokenRequest.%s: %s%s",
+		"invalid %sConnUUIDRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ValidateWSTokenRequestValidationError{}
+var _ error = ConnUUIDRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -783,24 +781,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ValidateWSTokenRequestValidationError{}
+} = ConnUUIDRequestValidationError{}
 
-// Validate checks the field values on ValidateWSTokenReply with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ValidateWSTokenReply) Validate() error {
+// Validate checks the field values on ConnUUIDReply with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ConnUUIDReply) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ValidateWSTokenReply with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ValidateWSTokenReplyMultiError, or nil if none found.
-func (m *ValidateWSTokenReply) ValidateAll() error {
+// ValidateAll checks the field values on ConnUUIDReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ConnUUIDReplyMultiError, or
+// nil if none found.
+func (m *ConnUUIDReply) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ValidateWSTokenReply) validate(all bool) error {
+func (m *ConnUUIDReply) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -810,19 +808,19 @@ func (m *ValidateWSTokenReply) validate(all bool) error {
 	// no validation rules for Uuid
 
 	if len(errors) > 0 {
-		return ValidateWSTokenReplyMultiError(errors)
+		return ConnUUIDReplyMultiError(errors)
 	}
 
 	return nil
 }
 
-// ValidateWSTokenReplyMultiError is an error wrapping multiple validation
-// errors returned by ValidateWSTokenReply.ValidateAll() if the designated
-// constraints aren't met.
-type ValidateWSTokenReplyMultiError []error
+// ConnUUIDReplyMultiError is an error wrapping multiple validation errors
+// returned by ConnUUIDReply.ValidateAll() if the designated constraints
+// aren't met.
+type ConnUUIDReplyMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ValidateWSTokenReplyMultiError) Error() string {
+func (m ConnUUIDReplyMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -831,11 +829,11 @@ func (m ValidateWSTokenReplyMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ValidateWSTokenReplyMultiError) AllErrors() []error { return m }
+func (m ConnUUIDReplyMultiError) AllErrors() []error { return m }
 
-// ValidateWSTokenReplyValidationError is the validation error returned by
-// ValidateWSTokenReply.Validate if the designated constraints aren't met.
-type ValidateWSTokenReplyValidationError struct {
+// ConnUUIDReplyValidationError is the validation error returned by
+// ConnUUIDReply.Validate if the designated constraints aren't met.
+type ConnUUIDReplyValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -843,24 +841,22 @@ type ValidateWSTokenReplyValidationError struct {
 }
 
 // Field function returns field value.
-func (e ValidateWSTokenReplyValidationError) Field() string { return e.field }
+func (e ConnUUIDReplyValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ValidateWSTokenReplyValidationError) Reason() string { return e.reason }
+func (e ConnUUIDReplyValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ValidateWSTokenReplyValidationError) Cause() error { return e.cause }
+func (e ConnUUIDReplyValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ValidateWSTokenReplyValidationError) Key() bool { return e.key }
+func (e ConnUUIDReplyValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ValidateWSTokenReplyValidationError) ErrorName() string {
-	return "ValidateWSTokenReplyValidationError"
-}
+func (e ConnUUIDReplyValidationError) ErrorName() string { return "ConnUUIDReplyValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ValidateWSTokenReplyValidationError) Error() string {
+func (e ConnUUIDReplyValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -872,14 +868,14 @@ func (e ValidateWSTokenReplyValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sValidateWSTokenReply.%s: %s%s",
+		"invalid %sConnUUIDReply.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ValidateWSTokenReplyValidationError{}
+var _ error = ConnUUIDReplyValidationError{}
 
 var _ interface {
 	Field() string
@@ -887,4 +883,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ValidateWSTokenReplyValidationError{}
+} = ConnUUIDReplyValidationError{}

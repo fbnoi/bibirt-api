@@ -16,7 +16,7 @@ const (
 	TOKEN_USER_NAMESPACE       = "token:user"
 )
 
-type MyClaimInterface interface {
+type MyClaimsInterface interface {
 	jwt.Claims
 	GetID() (string, error)
 	GetUUID() (string, error)
@@ -37,7 +37,7 @@ func NewTokenRepo(data *Data, logger log.Logger) biz.TokenRepo {
 }
 
 func (tr *TokenRepo) RegisterToken(tok *jwt.Token) {
-	claim := tok.Claims.(MyClaimInterface)
+	claim := tok.Claims.(MyClaimsInterface)
 	tr.must(
 		tr.rdb.HSet(
 			context.Background(),
@@ -51,7 +51,7 @@ func (tr *TokenRepo) RegisterToken(tok *jwt.Token) {
 }
 
 func (tr *TokenRepo) BlockToken(tok *jwt.Token) {
-	claim := tok.Claims.(MyClaimInterface)
+	claim := tok.Claims.(MyClaimsInterface)
 	key := fmt.Sprintf("token:%s:%s", claimSubject(claim), claimID(claim))
 	tr.must(tr.rdb.Set(context.Background(), key, 1, 0))
 }
@@ -73,8 +73,8 @@ func (tr *TokenRepo) getUserTokenID(UUID, field string) string {
 }
 
 func (tr *TokenRepo) IsTokenBlocked(tok *jwt.Token) bool {
-	claims := tok.Claims.(jwt.RegisteredClaims)
-	key := fmt.Sprintf("token:%s:%s", claims.Subject, claims.ID)
+	claim := tok.Claims.(MyClaimsInterface)
+	key := fmt.Sprintf("token:%s:%s", claimSubject(claim), claimID(claim))
 	res, err := tr.rdb.Exists(context.Background(), key).Result()
 	if err != nil && err != redis.Nil {
 		panic(err)
@@ -95,22 +95,22 @@ func (tr *TokenRepo) must(errAble ErrAble) {
 	}
 }
 
-func claimUUID(claim MyClaimInterface) string {
+func claimUUID(claim MyClaimsInterface) string {
 	str, _ := claim.GetUUID()
 	return str
 }
 
-func claimID(claim MyClaimInterface) string {
+func claimID(claim MyClaimsInterface) string {
 	str, _ := claim.GetID()
 	return str
 }
 
-func claimSubject(claim MyClaimInterface) string {
+func claimSubject(claim MyClaimsInterface) string {
 	str, _ := claim.GetSubject()
 	return str
 }
 
-func claimExpireAt(claim MyClaimInterface) time.Time {
+func claimExpireAt(claim MyClaimsInterface) time.Time {
 	t, _ := claim.GetExpirationTime()
 	return t.Time
 }
