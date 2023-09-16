@@ -243,6 +243,221 @@ var _ interface {
 	ErrorName() string
 } = RegisterAsAnonymousReplyValidationError{}
 
+// Validate checks the field values on UserInfoRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *UserInfoRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserInfoRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserInfoRequestMultiError, or nil if none found.
+func (m *UserInfoRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserInfoRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetToken()) < 1 {
+		err := UserInfoRequestValidationError{
+			field:  "Token",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return UserInfoRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserInfoRequestMultiError is an error wrapping multiple validation errors
+// returned by UserInfoRequest.ValidateAll() if the designated constraints
+// aren't met.
+type UserInfoRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserInfoRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserInfoRequestMultiError) AllErrors() []error { return m }
+
+// UserInfoRequestValidationError is the validation error returned by
+// UserInfoRequest.Validate if the designated constraints aren't met.
+type UserInfoRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserInfoRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserInfoRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserInfoRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserInfoRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserInfoRequestValidationError) ErrorName() string { return "UserInfoRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserInfoRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserInfoRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserInfoRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserInfoRequestValidationError{}
+
+// Validate checks the field values on UserInfoReply with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UserInfoReply) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserInfoReply with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in UserInfoReplyMultiError, or
+// nil if none found.
+func (m *UserInfoReply) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserInfoReply) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uuid
+
+	// no validation rules for Name
+
+	if len(errors) > 0 {
+		return UserInfoReplyMultiError(errors)
+	}
+
+	return nil
+}
+
+// UserInfoReplyMultiError is an error wrapping multiple validation errors
+// returned by UserInfoReply.ValidateAll() if the designated constraints
+// aren't met.
+type UserInfoReplyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserInfoReplyMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserInfoReplyMultiError) AllErrors() []error { return m }
+
+// UserInfoReplyValidationError is the validation error returned by
+// UserInfoReply.Validate if the designated constraints aren't met.
+type UserInfoReplyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserInfoReplyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserInfoReplyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserInfoReplyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserInfoReplyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserInfoReplyValidationError) ErrorName() string { return "UserInfoReplyValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserInfoReplyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserInfoReply.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserInfoReplyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserInfoReplyValidationError{}
+
 // Validate checks the field values on WSTokenRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.

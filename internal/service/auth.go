@@ -60,11 +60,24 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 	if err != nil {
 		return nil, err
 	}
-	token := s.tc.NewToken(refreshToken)
-
+	token := s.tc.NewAuthToken(refreshToken)
 	return &pb.RefreshTokenReply{
 		Token: s.tc.SignedString(token),
 	}, nil
+}
+
+func (s AuthService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb.UserInfoReply, error) {
+	token, err := s.parseAndValidateToken(req.Token)
+	if err != nil {
+		return nil, err
+	}
+	claims := s.tc.Claims(token)
+	var user biz.User
+	if s.uc.FindUserByUuid(ctx, claims.UUID, &user) {
+		return &pb.UserInfoReply{Uuid: claims.UUID, Name: user.Name}, nil
+	}
+
+	return nil
 }
 
 func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*pb.ConnUUIDReply, error) {
@@ -73,7 +86,6 @@ func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*p
 		return nil, err
 	}
 	claims := s.tc.Claims(token)
-
 	return &pb.ConnUUIDReply{Uuid: claims.UUID}, nil
 }
 

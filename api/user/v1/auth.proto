@@ -16,6 +16,12 @@ service Auth {
 			body: "*"
 		};
 	};
+	rpc UserInfo(UserInfoRequest) returns (UserInfoReply) {
+		option (google.api.http) = {
+			post: "/user_info"
+			body: "*"
+		};
+	};
 	rpc WSToken (WSTokenRequest) returns (WSTokenReply) {
 		option (google.api.http) = {
 			post: "/ws_token"
@@ -40,6 +46,14 @@ message RegisterAsAnonymousRequest {}
 message RegisterAsAnonymousReply {
 	string token = 1;
 	string refresh_token = 2;
+}
+
+message UserInfoRequest {
+	string token = 1 [(validate.rules).string.min_len =  1];
+}
+message UserInfoReply {
+	string uuid = 1;
+	string name = 2;
 }
 
 message WSTokenRequest {

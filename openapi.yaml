@@ -60,6 +60,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.user.v1.RegisterAsAnonymousReply'
+    /user_info:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_UserInfo
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.UserInfoRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.UserInfoReply'
     /ws_token:
         post:
             tags:
@@ -110,6 +128,18 @@ components:
         api.user.v1.RegisterAsAnonymousRequest:
             type: object
             properties: {}
+        api.user.v1.UserInfoReply:
+            type: object
+            properties:
+                uuid:
+                    type: string
+                name:
+                    type: string
+        api.user.v1.UserInfoRequest:
+            type: object
+            properties:
+                token:
+                    type: string
         api.user.v1.WSTokenReply:
             type: object
             properties:

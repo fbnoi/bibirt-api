@@ -36,6 +36,3 @@ bin/
 .vscode/
 .idea/
 *.swp
-
-# Generate files
-**.pb.go
