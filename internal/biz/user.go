@@ -1,23 +1,12 @@
 package biz
 
 import (
-	v1 "bibirt-api/api/user/v1"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
-)
-
-var (
-	ErrCreateAnonymousUserFailed = errors.InternalServer(v1.ErrorCode_CREATE_ANONYMOUS_USER_FAILED.String(), "create anonymous user failed")
-	ErrTokenInvalid              = errors.BadRequest(v1.ErrorCode_TOKEN_INVALID.String(), "token invalid")
-	ErrUserNotFound              = errors.NotFound(v1.ErrorCode_USER_NOT_FOUND.String(), "user not found")
-	ErrRefreshTokenInvalid       = errors.BadRequest(v1.ErrorCode_REFRESH_TOKEN_INVALID.String(), "refresh token invalid")
-	ErrRefreshTokenMissMatch     = errors.BadRequest(v1.ErrorCode_REFRESH_TOKEN_MISS_MATCH.String(), "refresh token miss match")
-	ErrGenerateTokenFailed       = errors.InternalServer(v1.ErrorCode_GENERATE_TOKEN_FAILED.String(), "generate token failed")
 )
 
 const (

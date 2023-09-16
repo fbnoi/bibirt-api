@@ -2,15 +2,15 @@ syntax = "proto3";
 
 package api.user.v1;
 
+import "errors/errors.proto";
+
 option go_package = "bibirt-api/api/user/v1;v1";
 option java_multiple_files = true;
 option java_package = "api.user.v1";
 
-enum ErrorCode {
-	CREATE_ANONYMOUS_USER_FAILED = 0;
-	TOKEN_INVALID = 1;
-	USER_NOT_FOUND = 2;
-	REFRESH_TOKEN_INVALID = 3;
-	REFRESH_TOKEN_MISS_MATCH = 4;
-	GENERATE_TOKEN_FAILED = 5;
+enum ErrorReason {
+	option (errors.default_code) = 500;
+
+	USER_NOT_FOUND = 0 [(errors.code) = 404];
+  	TOKEN_INVALID = 1 [(errors.code) = 412];
 }

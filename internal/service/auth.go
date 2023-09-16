@@ -9,7 +9,6 @@ import (
 	"bibirt-api/internal/conf"
 	"bibirt-api/pkg/util"
 
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -46,9 +45,9 @@ func (s *AuthService) WSToken(ctx context.Context, req *pb.WSTokenRequest) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	// if !s.tc.IsAuthToken(token) {
-	// 	return nil, errors.BadRequest()
-	// }
+	if !s.tc.IsAuthToken(token) {
+		return nil, pb.ErrorTokenInvalid("token invalid")
+	}
 	wsToken := s.tc.NewWSToken(token)
 	return &pb.WSTokenReply{
 		Token: s.tc.SignedString(wsToken),
@@ -59,6 +58,9 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 	refreshToken, err := s.parseAndValidateToken(req.RefreshToken)
 	if err != nil {
 		return nil, err
+	}
+	if !s.tc.IsRefreshToken(refreshToken) {
+		return nil, pb.ErrorTokenInvalid("token invalid")
 	}
 	token := s.tc.NewAuthToken(refreshToken)
 	return &pb.RefreshTokenReply{
@@ -71,19 +73,25 @@ func (s AuthService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb
 	if err != nil {
 		return nil, err
 	}
+	if !s.tc.IsAuthToken(token) {
+		return nil, pb.ErrorTokenInvalid("token invalid")
+	}
 	claims := s.tc.Claims(token)
 	var user biz.User
 	if s.uc.FindUserByUuid(ctx, claims.UUID, &user) {
 		return &pb.UserInfoReply{Uuid: claims.UUID, Name: user.Name}, nil
 	}
 
-	return nil
+	return nil, pb.ErrorUserNotFound("user not found")
 }
 
 func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*pb.ConnUUIDReply, error) {
 	token, err := s.parseAndValidateToken(req.Token)
 	if err != nil {
 		return nil, err
+	}
+	if !s.tc.IsWSToken(token) {
+		return nil, pb.ErrorTokenInvalid("token invalid")
 	}
 	claims := s.tc.Claims(token)
 	return &pb.ConnUUIDReply{Uuid: claims.UUID}, nil
@@ -92,10 +100,10 @@ func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*p
 func (s *AuthService) parseAndValidateToken(tokenStr string) (*jwt.Token, error) {
 	token, err := s.tc.ParseToken(tokenStr)
 	if err != nil {
-		return nil, errors.BadRequest(err.Error(), "token invalid")
+		return nil, pb.ErrorTokenInvalid("token invalid")
 	}
 	if !s.tc.IsTokenValid(token) {
-		return nil, errors.BadRequest("token invalid", "token invalid")
+		return nil, pb.ErrorTokenInvalid("token invalid")
 	}
 	return token, nil
 }
