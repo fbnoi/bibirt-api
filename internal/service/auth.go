@@ -81,7 +81,6 @@ func (s AuthService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb
 	if s.uc.FindUserByUuid(ctx, claims.UUID, &user) {
 		return &pb.UserInfoReply{Uuid: claims.UUID, Name: user.Name}, nil
 	}
-
 	return nil, pb.ErrorUserNotFound("user not found")
 }
 
