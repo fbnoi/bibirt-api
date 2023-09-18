@@ -60,7 +60,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequ
 		return nil, err
 	}
 	if !s.tc.IsRefreshToken(refreshToken) {
-		return nil, pb.ErrorTokenInvalid("token invalid")
+		return nil, pb.ErrorTokenInvalid("token's subject miss match")
 	}
 	token := s.tc.NewAuthToken(refreshToken)
 	return &pb.RefreshTokenReply{
@@ -74,7 +74,7 @@ func (s AuthService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb
 		return nil, err
 	}
 	if !s.tc.IsAuthToken(token) {
-		return nil, pb.ErrorTokenInvalid("token invalid")
+		return nil, pb.ErrorTokenInvalid("token's subject miss match")
 	}
 	claims := s.tc.Claims(token)
 	var user biz.User
@@ -90,7 +90,7 @@ func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*p
 		return nil, err
 	}
 	if !s.tc.IsWSToken(token) {
-		return nil, pb.ErrorTokenInvalid("token invalid")
+		return nil, pb.ErrorTokenInvalid("token's subject miss match")
 	}
 	claims := s.tc.Claims(token)
 	return &pb.ConnUUIDReply{Uuid: claims.UUID}, nil
@@ -99,7 +99,7 @@ func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*p
 func (s *AuthService) parseAndValidateToken(tokenStr string) (*jwt.Token, error) {
 	token, err := s.tc.ParseToken(tokenStr)
 	if err != nil {
-		return nil, pb.ErrorTokenInvalid("token invalid")
+		return nil, pb.ErrorTokenInvalid("parse token error: %s", err)
 	}
 	if !s.tc.IsTokenValid(token) {
 		return nil, pb.ErrorTokenInvalid("token invalid")

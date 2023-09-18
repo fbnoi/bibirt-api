@@ -69,7 +69,7 @@ func (tr *TokenUseCase) IsRefreshToken(token *jwt.Token) bool {
 
 func (tr *TokenUseCase) IsAuthToken(token *jwt.Token) bool {
 	sub, _ := token.Claims.GetSubject()
-	return sub == REFRESH_TOKEN_SUBJECT
+	return sub == AUTH_TOKEN_SUBJECT
 }
 
 func (tr *TokenUseCase) IsWSToken(token *jwt.Token) bool {
