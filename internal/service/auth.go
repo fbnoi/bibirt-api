@@ -84,7 +84,7 @@ func (s AuthService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb
 	return nil, pb.ErrorUserNotFound("user not found")
 }
 
-func (s *AuthService) ConnUUid(ctx context.Context, req *pb.ConnUUIDRequest) (*pb.ConnUUIDReply, error) {
+func (s *AuthService) ConnUUID(ctx context.Context, req *pb.ConnUUIDRequest) (*pb.ConnUUIDReply, error) {
 	token, err := s.parseAndValidateToken(req.Token)
 	if err != nil {
 		return nil, err
