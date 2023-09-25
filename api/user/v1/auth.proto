@@ -34,7 +34,7 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc ConnUUID (ConnUUIDRequest) returns (ConnUUIDReply) {
+	rpc WSUserInfo (WSUserInfoRequest) returns (WSUserInfoReply) {
 		option (google.api.http) = {
 			post: "/conn_uuid"
 			body: "*"
@@ -54,6 +54,7 @@ message UserInfoRequest {
 message UserInfoReply {
 	string uuid = 1;
 	string name = 2;
+	uint64 score = 3;
 }
 
 message WSTokenRequest {
@@ -70,9 +71,11 @@ message RefreshTokenReply {
 	string token = 1;
 }
 
-message ConnUUIDRequest {
+message WSUserInfoRequest {
 	string token = 1 [(validate.rules).string.min_len =  1];
 }
-message ConnUUIDReply {
+message WSUserInfoReply {
 	string uuid = 1;
+	string name = 2;
+	uint64 score = 3;
 }

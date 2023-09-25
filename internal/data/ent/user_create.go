@@ -94,6 +94,20 @@ func (uc *UserCreate) SetNillablePhone(s *string) *UserCreate {
 	return uc
 }
 
+// SetScore sets the "score" field.
+func (uc *UserCreate) SetScore(u uint64) *UserCreate {
+	uc.mutation.SetScore(u)
+	return uc
+}
+
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (uc *UserCreate) SetNillableScore(u *uint64) *UserCreate {
+	if u != nil {
+		uc.SetScore(*u)
+	}
+	return uc
+}
+
 // SetStatus sets the "status" field.
 func (uc *UserCreate) SetStatus(u uint8) *UserCreate {
 	uc.mutation.SetStatus(u)
@@ -149,6 +163,10 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
+	if _, ok := uc.mutation.Score(); !ok {
+		v := user.DefaultScore
+		uc.mutation.SetScore(v)
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
@@ -225,6 +243,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
 		_node.Phone = value
+	}
+	if value, ok := uc.mutation.Score(); ok {
+		_spec.SetField(user.FieldScore, field.TypeUint64, value)
+		_node.Score = value
 	}
 	if value, ok := uc.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeUint8, value)

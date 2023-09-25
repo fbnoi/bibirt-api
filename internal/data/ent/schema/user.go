@@ -22,6 +22,7 @@ func (User) Fields() []ent.Field {
 		field.String("salt").Optional(),
 		field.String("email").Optional(),
 		field.String("phone").Optional(),
+		field.Uint64("score").Optional().Default(0),
 		field.Uint8("status"),
 		field.Time("created_at").Default(time.Now),
 	}

@@ -10,12 +10,12 @@ paths:
         post:
             tags:
                 - Auth
-            operationId: Auth_ConnUUID
+            operationId: Auth_WSUserInfo
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.user.v1.ConnUUIDRequest'
+                            $ref: '#/components/schemas/api.user.v1.WSUserInfoRequest'
                 required: true
             responses:
                 "200":
@@ -23,7 +23,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.user.v1.ConnUUIDReply'
+                                $ref: '#/components/schemas/api.user.v1.WSUserInfoReply'
     /refresh_token:
         post:
             tags:
@@ -98,16 +98,6 @@ paths:
                                 $ref: '#/components/schemas/api.user.v1.WSTokenReply'
 components:
     schemas:
-        api.user.v1.ConnUUIDReply:
-            type: object
-            properties:
-                uuid:
-                    type: string
-        api.user.v1.ConnUUIDRequest:
-            type: object
-            properties:
-                token:
-                    type: string
         api.user.v1.RefreshTokenReply:
             type: object
             properties:
@@ -135,6 +125,9 @@ components:
                     type: string
                 name:
                     type: string
+                score:
+                    type: integer
+                    format: uint64
         api.user.v1.UserInfoRequest:
             type: object
             properties:
@@ -146,6 +139,21 @@ components:
                 token:
                     type: string
         api.user.v1.WSTokenRequest:
+            type: object
+            properties:
+                token:
+                    type: string
+        api.user.v1.WSUserInfoReply:
+            type: object
+            properties:
+                uuid:
+                    type: string
+                name:
+                    type: string
+                score:
+                    type: integer
+                    format: uint64
+        api.user.v1.WSUserInfoRequest:
             type: object
             properties:
                 token:

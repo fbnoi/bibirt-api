@@ -27,6 +27,7 @@ type User struct {
 	Salt      sql.NullString
 	Email     sql.NullString `json:"email,omitempty"`
 	Phone     sql.NullString `json:"phone,omitempty"`
+	Score     uint64         `json:"score,omitempty"`
 	Status    uint8          `json:"status,omitempty"`
 	CreatedAt time.Time      `json:"created_at,omitempty"`
 }

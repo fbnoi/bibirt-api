@@ -79,12 +79,16 @@ func (s AuthService) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb
 	claims := s.tc.Claims(token)
 	var user biz.User
 	if s.uc.FindUserByUuid(ctx, claims.UUID, &user) {
-		return &pb.UserInfoReply{Uuid: claims.UUID, Name: user.Name}, nil
+		return &pb.UserInfoReply{
+			Uuid:  claims.UUID,
+			Name:  user.Name,
+			Score: user.Score,
+		}, nil
 	}
 	return nil, pb.ErrorUserNotFound("user not found")
 }
 
-func (s *AuthService) ConnUUID(ctx context.Context, req *pb.ConnUUIDRequest) (*pb.ConnUUIDReply, error) {
+func (s *AuthService) WSUserInfo(ctx context.Context, req *pb.WSUserInfoRequest) (*pb.WSUserInfoReply, error) {
 	token, err := s.parseAndValidateToken(req.Token)
 	if err != nil {
 		return nil, err
@@ -93,7 +97,15 @@ func (s *AuthService) ConnUUID(ctx context.Context, req *pb.ConnUUIDRequest) (*p
 		return nil, pb.ErrorTokenInvalid("token's subject miss match")
 	}
 	claims := s.tc.Claims(token)
-	return &pb.ConnUUIDReply{Uuid: claims.UUID}, nil
+	var user biz.User
+	if s.uc.FindUserByUuid(ctx, claims.UUID, &user) {
+		return &pb.WSUserInfoReply{
+			Uuid:  user.Uuid,
+			Name:  user.Name,
+			Score: user.Score,
+		}, nil
+	}
+	return nil, pb.ErrorUserNotFound("user not found")
 }
 
 func (s *AuthService) parseAndValidateToken(tokenStr string) (*jwt.Token, error) {

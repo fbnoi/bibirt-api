@@ -133,6 +133,33 @@ func (uu *UserUpdate) ClearPhone() *UserUpdate {
 	return uu
 }
 
+// SetScore sets the "score" field.
+func (uu *UserUpdate) SetScore(u uint64) *UserUpdate {
+	uu.mutation.ResetScore()
+	uu.mutation.SetScore(u)
+	return uu
+}
+
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableScore(u *uint64) *UserUpdate {
+	if u != nil {
+		uu.SetScore(*u)
+	}
+	return uu
+}
+
+// AddScore adds u to the "score" field.
+func (uu *UserUpdate) AddScore(u int64) *UserUpdate {
+	uu.mutation.AddScore(u)
+	return uu
+}
+
+// ClearScore clears the value of the "score" field.
+func (uu *UserUpdate) ClearScore() *UserUpdate {
+	uu.mutation.ClearScore()
+	return uu
+}
+
 // SetStatus sets the "status" field.
 func (uu *UserUpdate) SetStatus(u uint8) *UserUpdate {
 	uu.mutation.ResetStatus()
@@ -236,6 +263,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.PhoneCleared() {
 		_spec.ClearField(user.FieldPhone, field.TypeString)
+	}
+	if value, ok := uu.mutation.Score(); ok {
+		_spec.SetField(user.FieldScore, field.TypeUint64, value)
+	}
+	if value, ok := uu.mutation.AddedScore(); ok {
+		_spec.AddField(user.FieldScore, field.TypeUint64, value)
+	}
+	if uu.mutation.ScoreCleared() {
+		_spec.ClearField(user.FieldScore, field.TypeUint64)
 	}
 	if value, ok := uu.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeUint8, value)
@@ -368,6 +404,33 @@ func (uuo *UserUpdateOne) SetNillablePhone(s *string) *UserUpdateOne {
 // ClearPhone clears the value of the "phone" field.
 func (uuo *UserUpdateOne) ClearPhone() *UserUpdateOne {
 	uuo.mutation.ClearPhone()
+	return uuo
+}
+
+// SetScore sets the "score" field.
+func (uuo *UserUpdateOne) SetScore(u uint64) *UserUpdateOne {
+	uuo.mutation.ResetScore()
+	uuo.mutation.SetScore(u)
+	return uuo
+}
+
+// SetNillableScore sets the "score" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableScore(u *uint64) *UserUpdateOne {
+	if u != nil {
+		uuo.SetScore(*u)
+	}
+	return uuo
+}
+
+// AddScore adds u to the "score" field.
+func (uuo *UserUpdateOne) AddScore(u int64) *UserUpdateOne {
+	uuo.mutation.AddScore(u)
+	return uuo
+}
+
+// ClearScore clears the value of the "score" field.
+func (uuo *UserUpdateOne) ClearScore() *UserUpdateOne {
+	uuo.mutation.ClearScore()
 	return uuo
 }
 
@@ -504,6 +567,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.PhoneCleared() {
 		_spec.ClearField(user.FieldPhone, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Score(); ok {
+		_spec.SetField(user.FieldScore, field.TypeUint64, value)
+	}
+	if value, ok := uuo.mutation.AddedScore(); ok {
+		_spec.AddField(user.FieldScore, field.TypeUint64, value)
+	}
+	if uuo.mutation.ScoreCleared() {
+		_spec.ClearField(user.FieldScore, field.TypeUint64)
 	}
 	if value, ok := uuo.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeUint8, value)

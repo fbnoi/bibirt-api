@@ -41,6 +41,8 @@ type UserMutation struct {
 	salt          *string
 	email         *string
 	phone         *string
+	score         *uint64
+	addscore      *int64
 	status        *uint8
 	addstatus     *int8
 	created_at    *time.Time
@@ -472,6 +474,76 @@ func (m *UserMutation) ResetPhone() {
 	delete(m.clearedFields, user.FieldPhone)
 }
 
+// SetScore sets the "score" field.
+func (m *UserMutation) SetScore(u uint64) {
+	m.score = &u
+	m.addscore = nil
+}
+
+// Score returns the value of the "score" field in the mutation.
+func (m *UserMutation) Score() (r uint64, exists bool) {
+	v := m.score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScore returns the old "score" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldScore(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScore: %w", err)
+	}
+	return oldValue.Score, nil
+}
+
+// AddScore adds u to the "score" field.
+func (m *UserMutation) AddScore(u int64) {
+	if m.addscore != nil {
+		*m.addscore += u
+	} else {
+		m.addscore = &u
+	}
+}
+
+// AddedScore returns the value that was added to the "score" field in this mutation.
+func (m *UserMutation) AddedScore() (r int64, exists bool) {
+	v := m.addscore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearScore clears the value of the "score" field.
+func (m *UserMutation) ClearScore() {
+	m.score = nil
+	m.addscore = nil
+	m.clearedFields[user.FieldScore] = struct{}{}
+}
+
+// ScoreCleared returns if the "score" field was cleared in this mutation.
+func (m *UserMutation) ScoreCleared() bool {
+	_, ok := m.clearedFields[user.FieldScore]
+	return ok
+}
+
+// ResetScore resets all changes to the "score" field.
+func (m *UserMutation) ResetScore() {
+	m.score = nil
+	m.addscore = nil
+	delete(m.clearedFields, user.FieldScore)
+}
+
 // SetStatus sets the "status" field.
 func (m *UserMutation) SetStatus(u uint8) {
 	m.status = &u
@@ -598,7 +670,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.uuid != nil {
 		fields = append(fields, user.FieldUUID)
 	}
@@ -619,6 +691,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.phone != nil {
 		fields = append(fields, user.FieldPhone)
+	}
+	if m.score != nil {
+		fields = append(fields, user.FieldScore)
 	}
 	if m.status != nil {
 		fields = append(fields, user.FieldStatus)
@@ -648,6 +723,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case user.FieldPhone:
 		return m.Phone()
+	case user.FieldScore:
+		return m.Score()
 	case user.FieldStatus:
 		return m.Status()
 	case user.FieldCreatedAt:
@@ -675,6 +752,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldEmail(ctx)
 	case user.FieldPhone:
 		return m.OldPhone(ctx)
+	case user.FieldScore:
+		return m.OldScore(ctx)
 	case user.FieldStatus:
 		return m.OldStatus(ctx)
 	case user.FieldCreatedAt:
@@ -737,6 +816,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPhone(v)
 		return nil
+	case user.FieldScore:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScore(v)
+		return nil
 	case user.FieldStatus:
 		v, ok := value.(uint8)
 		if !ok {
@@ -762,6 +848,9 @@ func (m *UserMutation) AddedFields() []string {
 	if m.add_type != nil {
 		fields = append(fields, user.FieldType)
 	}
+	if m.addscore != nil {
+		fields = append(fields, user.FieldScore)
+	}
 	if m.addstatus != nil {
 		fields = append(fields, user.FieldStatus)
 	}
@@ -775,6 +864,8 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldType:
 		return m.AddedType()
+	case user.FieldScore:
+		return m.AddedScore()
 	case user.FieldStatus:
 		return m.AddedStatus()
 	}
@@ -792,6 +883,13 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddType(v)
+		return nil
+	case user.FieldScore:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScore(v)
 		return nil
 	case user.FieldStatus:
 		v, ok := value.(int8)
@@ -820,6 +918,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldPhone) {
 		fields = append(fields, user.FieldPhone)
 	}
+	if m.FieldCleared(user.FieldScore) {
+		fields = append(fields, user.FieldScore)
+	}
 	return fields
 }
 
@@ -845,6 +946,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldPhone:
 		m.ClearPhone()
+		return nil
+	case user.FieldScore:
+		m.ClearScore()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -874,6 +978,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPhone:
 		m.ResetPhone()
+		return nil
+	case user.FieldScore:
+		m.ResetScore()
 		return nil
 	case user.FieldStatus:
 		m.ResetStatus()

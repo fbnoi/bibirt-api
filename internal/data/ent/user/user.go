@@ -27,6 +27,8 @@ const (
 	FieldEmail = "email"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
+	// FieldScore holds the string denoting the score field in the database.
+	FieldScore = "score"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -45,6 +47,7 @@ var Columns = []string{
 	FieldSalt,
 	FieldEmail,
 	FieldPhone,
+	FieldScore,
 	FieldStatus,
 	FieldCreatedAt,
 }
@@ -60,6 +63,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultScore holds the default value on creation for the "score" field.
+	DefaultScore uint64
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )
@@ -105,6 +110,11 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 // ByPhone orders the results by the phone field.
 func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
+}
+
+// ByScore orders the results by the score field.
+func ByScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldScore, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

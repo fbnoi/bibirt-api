@@ -41,7 +41,6 @@ config:
 data:
 	ent generate ./internal/data/ent/schema
 
-
 .PHONY: api
 # generate api proto
 api:

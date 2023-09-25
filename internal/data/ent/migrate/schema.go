@@ -18,6 +18,7 @@ var (
 		{Name: "salt", Type: field.TypeString, Nullable: true},
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
+		{Name: "score", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "status", Type: field.TypeUint8},
 		{Name: "created_at", Type: field.TypeTime},
 	}

@@ -89,6 +89,11 @@ func Phone(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPhone, v))
 }
 
+// Score applies equality check predicate on the "score" field. It's identical to ScoreEQ.
+func Score(v uint64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldScore, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldStatus, v))
@@ -567,6 +572,56 @@ func PhoneEqualFold(v string) predicate.User {
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldPhone, v))
+}
+
+// ScoreEQ applies the EQ predicate on the "score" field.
+func ScoreEQ(v uint64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldScore, v))
+}
+
+// ScoreNEQ applies the NEQ predicate on the "score" field.
+func ScoreNEQ(v uint64) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldScore, v))
+}
+
+// ScoreIn applies the In predicate on the "score" field.
+func ScoreIn(vs ...uint64) predicate.User {
+	return predicate.User(sql.FieldIn(FieldScore, vs...))
+}
+
+// ScoreNotIn applies the NotIn predicate on the "score" field.
+func ScoreNotIn(vs ...uint64) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldScore, vs...))
+}
+
+// ScoreGT applies the GT predicate on the "score" field.
+func ScoreGT(v uint64) predicate.User {
+	return predicate.User(sql.FieldGT(FieldScore, v))
+}
+
+// ScoreGTE applies the GTE predicate on the "score" field.
+func ScoreGTE(v uint64) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldScore, v))
+}
+
+// ScoreLT applies the LT predicate on the "score" field.
+func ScoreLT(v uint64) predicate.User {
+	return predicate.User(sql.FieldLT(FieldScore, v))
+}
+
+// ScoreLTE applies the LTE predicate on the "score" field.
+func ScoreLTE(v uint64) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldScore, v))
+}
+
+// ScoreIsNil applies the IsNil predicate on the "score" field.
+func ScoreIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldScore))
+}
+
+// ScoreNotNil applies the NotNil predicate on the "score" field.
+func ScoreNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldScore))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
